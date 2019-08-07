@@ -1,61 +1,73 @@
-
-const path = require('path');
+const path              = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: path.join(__dirname, '../src/index.tsx'),
-  output: {
-    path: path.join(__dirname, '../dist'),
-    filename: 'bundle.min.js'
+  cache       : true,
+  context     : path.resolve(__dirname, '../'),
+  entry       : {
+    app: './src/index.tsx',
+  },
+  output      : {
+    path    : path.join(__dirname, '../dist'),
+    filename: '[name].[hash].bundle.js',
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
   },
   // Enable sourcemaps for debugging webpack's output.
-  devtool: "source-map",
-  plugins: [
+  devtool     : 'source-map',
+  plugins     : [
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, '../src/index.html'),
-    })
+      template: './src/index.html',
+    }),
   ],
-  resolve: {
+  resolve     : {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: [".ts", ".tsx", '.js']
+    extensions: [ '.ts', '.tsx', '.js' ],
+    alias     : {
+      '@': path.join(__dirname, '../src'),
+    },
   },
-  module: {
+  module      : {
     rules: [
       {
         test: /\.css$/,
-        use: [
+        use : [
           'style-loader',
-          'css-loader'
-        ]
+          'css-loader',
+        ],
       },
       {
         test: /\.less$/,
-        use: [
+        use : [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
           {
-            loader: 'less-loader', options: {
-              javascriptEnabled: true
-            }
-          }
-        ]
+            loader : 'less-loader',
+            options: {
+              javascriptEnabled: true,
+            },
+          },
+        ],
       },
       {
-        test: /\.ts(x?)$/,
+        test   : /\.ts(x?)$/,
         exclude: /node_modules/,
-        use: [
+        use    : [
           {
-            loader: "ts-loader"
-          }
-        ]
+            loader: 'ts-loader',
+          },
+        ],
       },
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {
-        enforce: "pre",
-        test: /\.js$/,
-        loader: "source-map-loader"
-      }
-    ]
+        enforce: 'pre',
+        test   : /\.js$/,
+        loader : 'source-map-loader',
+      },
+    ],
   },
   // When importing a module whose path matches one of the following, just
   // assume a corresponding global variable exists and use that instead.
